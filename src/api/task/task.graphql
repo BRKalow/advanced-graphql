@@ -15,8 +15,7 @@ enum TaskType {
 # Rething making the Task type an interface instead
 # and create two new type (DevTask, DesignTask) that implement the
 # Task interface
-# don't forget to add the correct fields to the correct Type 💯
-type Task {
+interface Task {
   id: ID!
   name: String!
   project: Project!
@@ -27,11 +26,38 @@ type Task {
   type: TaskType!
   dueDate: Float
   createdAt: String!
-  updatedAt: String!
-  # devTask specific field
-  repo: Repo!
-  # designTask specific task
+  updatedAt: String! 
+}
+
+# don't forget to add the correct fields to the correct Type 💯
+type DesignTask implements Task {
+  id: ID!
+  name: String!
+  project: Project!
+  status: Status!
+  description: String
+  tasks: [Task]!
+  parentTask: Task
+  type: TaskType!
+  dueDate: Float
+  createdAt: String!
+  updatedAt: String! 
   assetUrl: String!
+}
+
+type DevTask implements Task {
+  id: ID!
+  name: String!
+  project: Project!
+  status: Status!
+  description: String
+  tasks: [Task]!
+  parentTask: Task
+  type: TaskType!
+  dueDate: Float
+  createdAt: String!
+  updatedAt: String! 
+  repoUrl: String!
 }
 
 type Repo {

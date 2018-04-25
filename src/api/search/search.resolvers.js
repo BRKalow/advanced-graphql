@@ -1,12 +1,12 @@
 const search = async (_, args, ctx) => {
-  const query = {$text: {$search: args.name}}
-  
+  const query = { $text: { $search: args.name } };
+
   const results = await Promise.all([
     ctx.models.task.find(query).exec(),
     ctx.models.project.find(query).exec()
-  ])
-  return [].concat(...results)
-}
+  ]);
+  return [].concat(...results);
+};
 
 module.exports = {
   Query: {
@@ -14,11 +14,11 @@ module.exports = {
   },
   SearchResult: {
     __resolveType(searchResult) {
-      /*
-        You must resolve the type for SearchResult
-        Think about the differences between a Project and a Task
-        Then the difference between a DevTask and A DesignTask
-      */
+      if (searchResult.type) {
+        if (searchResult.type === 'dev') return 'DevTask';
+        if (searchResult.type === 'design') return 'DesignTask';
+      }
+      return 'Project';
     }
   }
-}
+};

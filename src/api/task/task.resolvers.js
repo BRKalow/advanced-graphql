@@ -1,47 +1,47 @@
-const {reposForOrg} = require('../github')
+const { reposForOrg } = require('../github');
 
 const task = (_, args, ctx) => {
-  const {id: _id, name, project} = args.input
+  const { id: _id, name, project } = args.input;
 
   if (!_id && !name) {
-    throw new Error('Invalid input')
+    throw new Error('Invalid input');
   }
-  return ctx.loaders.task.load(_id)
-}
+  return ctx.loaders.task.load(_id);
+};
 const tasks = (_, args, ctx) => {
-  return ctx.models.task.find(args.input)
-}
+  return ctx.models.task.find(args.input);
+};
 const newTask = (_, args, ctx) => {
-  return ctx.models.task.create(args.input)
-}
+  return ctx.models.task.create(args.input);
+};
 const removeTask = async (_, args, ctx) => {
-  const task = await ctx.models.task
-    .findByIdAndRemove(args.id)
-    .exec()
-  
+  const task = await ctx.models.task.findByIdAndRemove(args.id).exec();
+
   if (!task) {
-    throw new Error('No resource')
+    throw new Error('No resource');
   }
-  return task
-}
+  return task;
+};
 const changeStatus = (_, args, ctx) => {
-  return ctx.models.task.findByIdAndUpdate(args.input.id, {
-    status: args.input.status
-  }, {new: true})
-  .exec()
-}
+  return ctx.models.task
+    .findByIdAndUpdate(
+      args.input.id,
+      {
+        status: args.input.status
+      },
+      { new: true }
+    )
+    .exec();
+};
 
 const taskResolvers = {
   id(task) {
-    return task._id + ''
+    return task._id + '';
   },
   project(task, args, ctx) {
-    return ctx.models.project
-      .findById(task.project)
-      .exec()
+    return ctx.models.project.findById(task.project).exec();
   }
-}
-
+};
 
 module.exports = {
   Query: {
@@ -55,30 +55,26 @@ module.exports = {
   },
   Task: {
     __resolveType(task) {
-      /*
-        Resolve the Task interface
-        what is the difference between a DevTask and DesignTask?
-        is there a field on the task model that you can check?
-        A value?
-      */
+      if (task.type === 'dev') return 'DevTask';
+      if (task.type === 'design') return 'DesignTask';
     }
   },
   DevTask: {
-    ...taskResolvers,
-    async repo(task, args, ctx) {
-      const name = task.repoUrl.split('/').pop()
+    ...taskResolvers
+    // async repo(task, args, ctx) {
+    //   const name = task.repoUrl.split('/').pop();
 
-      const repos = await reposForOrg()
-      const repo = repos.find(r => r.name === name)
-      return {
-        name: repo.name,
-        description: repo.description,
-        url: repo.html_url,
-        issueCount: repo.open_issues
-      }
-    }
+    //   const repos = await reposForOrg();
+    //   const repo = repos.find(r => r.name === name);
+    //   return {
+    //     name: repo.name,
+    //     description: repo.description,
+    //     url: repo.html_url,
+    //     issueCount: repo.open_issues
+    //   };
+    // }
   },
   DesignTask: {
     ...taskResolvers
   }
-}
+};
