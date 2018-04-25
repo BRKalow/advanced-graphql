@@ -1,35 +1,38 @@
-const {reposForOrg} = require('../github')
+const { reposForOrg } = require('../github');
 
 const task = (_, args, ctx) => {
-  const {id: _id, name, project} = args.input
+  const { id: _id, name, project } = args.input;
 
   if (!_id && !name) {
-    throw new Error('Invalid input')
+    throw new Error('Invalid input');
   }
-  return ctx.loaders.task.load(_id)
-}
+  return ctx.loaders.task.load(_id);
+};
 const tasks = (_, args, ctx) => {
-  return ctx.models.task.find(args.input)
-}
+  return ctx.models.task.find(args.input);
+};
 const newTask = (_, args, ctx) => {
-  return ctx.models.task.create(args.input)
-}
+  return ctx.models.task.create(args.input);
+};
 const removeTask = async (_, args, ctx) => {
-  const task = await ctx.models.task
-    .findByIdAndRemove(args.id)
-    .exec()
-  
+  const task = await ctx.models.task.findByIdAndRemove(args.id).exec();
+
   if (!task) {
-    throw new Error('No resource')
+    throw new Error('No resource');
   }
-  return task
-}
+  return task;
+};
 const changeStatus = (_, args, ctx) => {
-  return ctx.models.task.findByIdAndUpdate(args.input.id, {
-    status: args.input.status
-  }, {new: true})
-  .exec()
-}
+  return ctx.models.task
+    .findByIdAndUpdate(
+      args.input.id,
+      {
+        status: args.input.status
+      },
+      { new: true }
+    )
+    .exec();
+};
 
 module.exports = {
   Query: {
@@ -43,8 +46,10 @@ module.exports = {
   },
   Task: {
     id(task) {
-      return task._id + ''
+      return task._id + '';
     },
-    // resolve some fields here
+    project(task, _, ctx) {
+      return ctx.models.project.findById(task.project);
+    }
   }
-}
+};

@@ -1,22 +1,20 @@
 const project = async (_, args, ctx, info) => {
-  const project = await ctx.models.project
-    .findById(args.input.id)
-    .exec()
+  const project = await ctx.models.project.findById(args.input.id).exec();
 
   if (!project) {
-    throw new Error('Project does not exist')
+    throw new Error('Project does not exist');
   }
 
-  return project
-}
+  return project;
+};
 
 const projects = (_, __, ctx) => {
-  return ctx.models.project.find({}).exec()
-}
+  return ctx.models.project.find({}).exec();
+};
 
 const newProject = (_, args, ctx) => {
-  return ctx.models.project.create(args.input)
-}
+  return ctx.models.project.create(args.input);
+};
 
 module.exports = {
   Query: {
@@ -28,8 +26,10 @@ module.exports = {
   },
   Project: {
     id(project) {
-      return project._id + ''
+      return project._id + '';
     },
-    // resolve some fields here
+    tasks(project, _, ctx) {
+      return ctx.models.task.find({ project: project._id });
+    }
   }
-}
+};
