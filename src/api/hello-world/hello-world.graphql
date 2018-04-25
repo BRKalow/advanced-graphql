@@ -1,0 +1,15 @@
+type HelloWorld {
+  message: String!
+}
+
+input HelloWorldInput {
+  message: String!
+}
+
+type Query {
+  helloWorld: HelloWorld!
+}
+
+type Mutation {
+  createHelloWorld(input: HelloWorldInput!): HelloWorld
+}

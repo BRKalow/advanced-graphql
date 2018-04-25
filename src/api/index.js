@@ -1,16 +1,15 @@
-const project = require('./project')
-const loaders = require('./loaders')
-const merge = require('lodash/merge')
+const project = require('./project');
+const helloWorld = require('./hello-world');
+const loaders = require('./loaders');
+const merge = require('lodash/merge');
 
 module.exports = {
-  typeDefs: [
-    project.typeDefs,
-  ].join(' '),
-  resolvers: merge({}, project.resolvers),
+  typeDefs: [project.typeDefs, helloWorld.typeDefs].join(' '),
+  resolvers: merge({}, project.resolvers, helloWorld.resolvers),
   context: {
     models: {
       project: project.model
     },
     loaders: loaders()
   }
-}
+};
